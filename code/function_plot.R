@@ -24,14 +24,26 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
     yaxislabel <- "Escapement"
   }
   
+  maxesc <- datadf %>%
+    rename(Year = Year_column, River = River_column, 
+           Species = species_column, Escapement_Count = Escapement_column) %>%
+    filter(River == river, Year >= minyear, Species == species) %>%
+    summarise(max(Escapement_Count, na.rm = TRUE)) %>% as.numeric()
+
+  
+  maxyear <- datadf %>% 
+    rename(Year = Year_column) %>%
+    summarise(max(Year, na.rm = TRUE)) %>% as.numeric()
+  
+  
   # import data
-  datadf %>% 
+  .dataclean <- datadf %>% 
     # match which columns to look for, filter as set, remove NAs
     rename(Year = Year_column, River = River_column, 
            Species = species_column, Escapement_Count = Escapement_column) %>%
     filter(River == river, Year >= minyear, 
            Species == species, !is.na(Escapement_Count)) %>%
-    # add column if esc not met so that we 
+    # add column if esc not met so that we can mark it differently
     mutate(abovebelow = if_else(Escapement_Count < EscapementGoal_Lower, 
                                 "Escapement less than goal", "Escapement goal met or exceeded"),
            #logic to convert to thousands
@@ -40,8 +52,12 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
            EscapementGoal_Lower = case_when(setthousands == TRUE ~ EscapementGoal_Lower / 1000,
                                         .default = EscapementGoal_Lower),
            EscapementGoal_Upper = case_when(setthousands == TRUE ~ EscapementGoal_Upper / 1000,
-                                        .default = EscapementGoal_Upper)) %>%
+                                        .default = EscapementGoal_Upper))
+  
+  maxcount <- max(.dataclean$Escapement_Count)
+  
     # Plotting
+  .dataclean %>%
     ggplot(data = ., aes(x = Year, y = Escapement_Count, fill = abovebelow)) + 
     geom_col(aes(x = Year, y = Escapement_Count, fill = abovebelow),
              color = "gray30", # bar outline color
@@ -57,8 +73,9 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
                                            GoalEnd == "EscapementGoal_Upper" ~ "Escapement goal upper bound",
                                            .default = NA)),
               aes(x = Year, y = Goal, linetype = GoalEnd)) +
-    scale_x_continuous(breaks = seq(from = minyear, to = 2023, by = xbreakspace),
-                       minor_breaks = seq(from = minyear, to = 2023, by = 1),
+    scale_x_continuous(limits = c(minyear-1, maxyear+1),
+                       breaks = seq(from = minyear, to = maxyear, by = xbreakspace),
+                       minor_breaks = seq(from = minyear, to = maxyear, by = 1),
                        guide = guide_axis(minor.ticks = TRUE)) +
     scale_y_continuous(limits = c(0, maxy), labels = scales::comma,
                        breaks = setybreaks) +
@@ -107,7 +124,14 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
   # ggsave(testfig, filename = "output/testfig.png", dpi = 500, height = 3.46, width = 4.76,  units = "in")
   
   # use + to add/overwrite existing scales/theme
+
 }
   
 
 
+
+  
+  
+  
+  
+  

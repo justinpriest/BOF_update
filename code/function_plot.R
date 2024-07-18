@@ -80,6 +80,7 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
     scale_y_continuous(limits = c(0, maxy), labels = scales::comma,
                        breaks = setybreaks) +
     scale_fill_manual(values = c("gray80", "black")) + # above / below color
+                      #drop = FALSE should work but doesn't (should show unused category if always made esc)
     scale_linetype_manual(values = c("33", "solid"),   # 33 = 3 units dash, 3 units space
                           guide = guide_legend(override.aes=aes(fill=NA),
                                                reverse = TRUE, # put upper on top
@@ -91,6 +92,7 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
     theme(panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
           legend.key.size = unit(0.9, "lines"),
+          #legend.key = element_rect(colour = NA),
           strip.background = element_rect(fill = NA, color = NA),
           strip.text.x = element_text(color = "gray30"),
           strip.text.y = element_text(color = "gray30"),
@@ -128,10 +130,3 @@ create_BOFfig <- function(datadf = SEAK_escape, river = "Berners River",
 }
   
 
-
-
-  
-  
-  
-  
-  

@@ -7,9 +7,9 @@ library(patchwork)
 SEAK_escgoals <- read_csv("../coho_data/data/SEAK_Coho_EscGoals.csv") %>% 
   dplyr::select(-CollectionType, -GoalType, - Comment)
 SEAK_escape <- read_csv("../coho_data/data/SEAK_Coho_Escapement_1972-2023.csv") %>%
-  left_join(SEAK_escgoals, by = c("River" = "System")) %>% 
-  mutate(abovebelow = if_else(Escapement_Count < EscapementGoal_Lower, 
-                              "Escapement less than goal", "Escapement goal met or exceeded"))
+  left_join(SEAK_escgoals, by = c("River" = "System")) #%>% 
+  # mutate(abovebelow = if_else(Escapement_Count < EscapementGoal_Lower, 
+  #                             "Escapement less than goal", "Escapement goal met or exceeded"))
 
 #### BERNERS RIVER COHO ####
 berners_esc <- create_BOFfig(datadf = SEAK_escape, river = "Berners River")
@@ -58,6 +58,13 @@ ktn_esc <- create_BOFfig(datadf = SEAK_escape, river = "Ketchikan Survey Index",
 ktn_esc
 ggsave(ktn_esc, filename = "output/esc_ktn.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
 
+#### KLAWOCK RIVER COHO ####
+ktn_esc <- create_BOFfig(datadf = SEAK_escape, river = "Klawock River",
+                         setthousands = FALSE, maxy = 23000,
+                         setybreaks = seq(from=0, to=25000, by = 5000))
+ktn_esc
+ggsave(ktn_esc, filename = "output/esc_ktn.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
+
 
 #### YAKUTAT AREA COHO ####
 tawah <- create_BOFfig(datadf = SEAK_escape, river = "Tawah Creek",
@@ -78,7 +85,16 @@ ggsave(yak_esc, filename = "output/esc_yak.png", dpi = 500, height = 6, width = 
 
 
 
-
+klawock_esc <- create_BOFfig(datadf = SEAK_escape %>%
+                add_row(Year = 1996, River = "Klawock River", 
+                        Species = "Coho Salmon", Escapement_Count = 0,
+                        EscapementGoal_Lower = 1), 
+              # had to "cheat" and add a dummy row to get it to show in legend
+              river = "Klawock River",
+              setthousands = FALSE, maxy = 25000,
+              setybreaks = seq(from=0, to=25000, by=5000)) 
+klawock_esc
+ggsave(klawock_esc, filename = "output/esc_klwk.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
 
 
 

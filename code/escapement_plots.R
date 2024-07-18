@@ -59,11 +59,16 @@ ktn_esc
 ggsave(ktn_esc, filename = "output/esc_ktn.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
 
 #### KLAWOCK RIVER COHO ####
-ktn_esc <- create_BOFfig(datadf = SEAK_escape, river = "Klawock River",
-                         setthousands = FALSE, maxy = 23000,
-                         setybreaks = seq(from=0, to=25000, by = 5000))
-ktn_esc
-ggsave(ktn_esc, filename = "output/esc_ktn.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
+klawock_esc <- create_BOFfig(datadf = SEAK_escape %>%
+                               add_row(Year = 1996, River = "Klawock River", 
+                                       Species = "Coho Salmon", Escapement_Count = 0,
+                                       EscapementGoal_Lower = 1), 
+                             # had to "cheat" and add a dummy row to get it to show in legend
+                             river = "Klawock River",
+                             setthousands = FALSE, maxy = 25000,
+                             setybreaks = seq(from=0, to=25000, by=5000)) 
+klawock_esc
+ggsave(klawock_esc, filename = "output/esc_klwk.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
 
 
 #### YAKUTAT AREA COHO ####
@@ -85,16 +90,6 @@ ggsave(yak_esc, filename = "output/esc_yak.png", dpi = 500, height = 6, width = 
 
 
 
-klawock_esc <- create_BOFfig(datadf = SEAK_escape %>%
-                add_row(Year = 1996, River = "Klawock River", 
-                        Species = "Coho Salmon", Escapement_Count = 0,
-                        EscapementGoal_Lower = 1), 
-              # had to "cheat" and add a dummy row to get it to show in legend
-              river = "Klawock River",
-              setthousands = FALSE, maxy = 25000,
-              setybreaks = seq(from=0, to=25000, by=5000)) 
-klawock_esc
-ggsave(klawock_esc, filename = "output/esc_klwk.png", dpi = 500, height = 3.5, width = 5.25,  units = "in")
 
 
 
